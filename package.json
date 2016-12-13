@@ -14,10 +14,10 @@
   },
   "maintainers": [],
   "contributors": [],
-  "dependencies": {},
-  "devDependencies": {
-    "nan": "^2.2.0"
+  "dependencies": {
+    "nan": "^2.4.0"
   },
+  "devDependencies": {},
   "engines": {
     "node": ">= 5.9.1"
   },
