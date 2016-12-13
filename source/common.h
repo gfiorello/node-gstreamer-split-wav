@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
-#include <cerrno>
-#include <glib.h>
 #include <glib/gstdio.h>
 #include <gst/gst.h>
 
