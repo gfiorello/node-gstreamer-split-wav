@@ -1,6 +1,6 @@
 {
   "name": "gstreamer-split-wav",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Use GStreamer to split live wav to multi ogg files",
   "author": {
     "name": "Gaetano Fiorello",
