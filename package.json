@@ -27,7 +27,7 @@
     "debug": "node-gyp rebuild --debug"
   },
   "gypfile": true,
-  "readme": "You shouldn't've read me.",
+  "readme": "README.md",
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/gfiorello/node-gstreamer-split-wav/issues"
