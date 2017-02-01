@@ -42,7 +42,7 @@ namespace gstSplitWav {
 		_pipeline = my_gst_pipeline_new("save-sec");
 		_queue = my_gst_element_factory_make("queue", "queue");
 		/*	Get the starting time in microseconds */
-		_birthdate = g_get_real_time();
+		_birthdate = g_get_real_time() / SECOND_IN_MSECS;
 
 		GstElement *filesrc = my_gst_element_factory_make("filesrc", "filesrc");
 		GstElement *wavparse = my_gst_element_factory_make("wavparse", "wavparse");
@@ -61,11 +61,9 @@ namespace gstSplitWav {
 		_fileDir = g_strdup_printf("%s", outputDir);
 
 		if (_keepStamps) {
-			_storedate = _birthdate / TO_NANOSECONDS;
-			_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", _storedate, _secnum);
-		} else {
-			_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", _birthdate, _secnum);
+			_storedate = _birthdate;
 		}
+		_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", _birthdate, _secnum);
 		
 		#ifdef NDEBUG
 		g_print("Start time:\t\t%" G_GINT64_FORMAT "\n", _birthdate);
@@ -213,7 +211,7 @@ namespace gstSplitWav {
 						g_print("Closing last file\n");
 						#endif
 						br->obj->_isLastFile = TRUE;
-						br->obj->changeFile(br);	
+						br->obj->changeFile(br);
 					}
 					break;
 				case GST_MESSAGE_ERROR: {
@@ -251,6 +249,11 @@ namespace gstSplitWav {
 			Nan::New<String>("content").ToLocalChecked(),
 			Nan::CopyBuffer((char*)fileContent.data(), fileContent.size()).ToLocalChecked()
 		);
+
+		m->Set(
+			Nan::New<String>("isLastFile").ToLocalChecked(),
+			Nan::New<Boolean>(br->obj->_isLastFile)
+		);
 		
 		if (_keepFiles) {
 			gchar *output = g_strdup_printf("%s%s.ogg", _fileDir, _filename);
@@ -270,9 +273,8 @@ namespace gstSplitWav {
 		/*	if is not the EOF */
 		if (!_isLastFile) {
 			_secnum++;
-			_birthdate = g_get_real_time();
-
-			_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", (_keepStamps) ? _storedate: _birthdate, _secnum);
+			_birthdate = g_get_real_time() / SECOND_IN_MSECS;
+			_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", (_keepStamps) ? _storedate : _birthdate, _secnum);
 			
 			_savebin = newSaveBin();
 			gst_bin_add(GST_BIN(_pipeline), _savebin);
@@ -297,7 +299,7 @@ namespace gstSplitWav {
 
 	GstPadProbeReturn GstSplitWav::probeData(GstPad *pad, GstPadProbeInfo *info, gpointer data) {
 		GstSplitWav *self = reinterpret_cast<GstSplitWav*>(data);
-		gint64 elapsed_time = g_get_real_time();
+		gint64 elapsed_time = g_get_real_time() / SECOND_IN_MSECS;
 		
 		(self->_numFrames)++;
 		elapsed_time -= self->_birthdate;

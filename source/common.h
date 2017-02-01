@@ -7,8 +7,7 @@
 #include <glib/gstdio.h>
 #include <gst/gst.h>
 
-#define SECOND_IN_MSECS 1000000
-#define	TO_NANOSECONDS	1000
+#define SECOND_IN_MSECS 1000
 
 #undef NDEBUG
 
