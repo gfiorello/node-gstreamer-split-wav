@@ -34,7 +34,7 @@ namespace gstSplitWav {
 			gulong _probeId;
 			gint64 _birthdate;
 			gint64 _storedate;
-			gint64 _secnum;
+			guint32 _secnum;
 			guint _numFrames;
 			gchar *_fileDir;
 			gchar *_filename;

@@ -7,8 +7,6 @@
 #include <glib/gstdio.h>
 #include <gst/gst.h>
 
-#define SECOND_IN_MSECS 1000
-
 #undef NDEBUG
 
 namespace gstSplitWav {

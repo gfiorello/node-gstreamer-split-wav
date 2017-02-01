@@ -42,7 +42,7 @@ namespace gstSplitWav {
 		_pipeline = my_gst_pipeline_new("save-sec");
 		_queue = my_gst_element_factory_make("queue", "queue");
 		/*	Get the starting time in microseconds */
-		_birthdate = g_get_real_time() / SECOND_IN_MSECS;
+		_birthdate = g_get_real_time();
 
 		GstElement *filesrc = my_gst_element_factory_make("filesrc", "filesrc");
 		GstElement *wavparse = my_gst_element_factory_make("wavparse", "wavparse");
@@ -63,10 +63,10 @@ namespace gstSplitWav {
 		if (_keepStamps) {
 			_storedate = _birthdate;
 		}
-		_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", _birthdate, _secnum);
+		_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05" G_GUINT32_FORMAT, GST_TIME_AS_MSECONDS(_birthdate), _secnum);
 		
 		#ifdef NDEBUG
-		g_print("Start time:\t\t%" G_GINT64_FORMAT "\n", _birthdate);
+		g_print("Start time:\t\t%" G_GINT64_FORMAT "\n", GST_TIME_AS_MSECONDS(_birthdate));
 		g_print("Target folder:\t\t%s\n", _fileDir);
 		g_print("Source file:\t\t%s\n", inputFile);
 		g_print("Target file:\t\t%s\n", _filename);
@@ -273,8 +273,8 @@ namespace gstSplitWav {
 		/*	if is not the EOF */
 		if (!_isLastFile) {
 			_secnum++;
-			_birthdate = g_get_real_time() / SECOND_IN_MSECS;
-			_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05lu", (_keepStamps) ? _storedate : _birthdate, _secnum);
+			_birthdate = g_get_real_time();
+			_filename = g_strdup_printf("%" G_GINT64_FORMAT "_%05" G_GUINT32_FORMAT, GST_TIME_AS_MSECONDS((_keepStamps) ? _storedate : _birthdate), _secnum);
 			
 			_savebin = newSaveBin();
 			gst_bin_add(GST_BIN(_pipeline), _savebin);
@@ -299,7 +299,7 @@ namespace gstSplitWav {
 
 	GstPadProbeReturn GstSplitWav::probeData(GstPad *pad, GstPadProbeInfo *info, gpointer data) {
 		GstSplitWav *self = reinterpret_cast<GstSplitWav*>(data);
-		gint64 elapsed_time = g_get_real_time() / SECOND_IN_MSECS;
+		gint64 elapsed_time = g_get_real_time();
 		
 		(self->_numFrames)++;
 		elapsed_time -= self->_birthdate;
@@ -315,7 +315,7 @@ namespace gstSplitWav {
 		GST_PAD_PROBE_INFO_DATA(info) = buffer;
 		
 		if (!flags) {
-			if (elapsed_time >= SECOND_IN_MSECS) {
+			if (elapsed_time >= 1000000) {
 				self->_numFrames = 0;
 				GstPad *savebinpad = my_gst_element_get_static_pad(self->_savebin, "audio_sink");
 				self->_ignoreEOS = TRUE;
